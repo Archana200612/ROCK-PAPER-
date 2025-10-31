@@ -1,0 +1,127 @@
+import tkinter as tk
+import random
+
+# --- Game Setup ---
+choices = ["Rock", "Paper", "Scissors"]
+emojis = {"Rock": "🪨", "Paper": "📄", "Scissors": "✂️"}
+player_score = 0
+ai_score = 0
+fullscreen = False  # default windowed mode
+
+# --- Functions ---
+def play(player_choice):
+    global player_score, ai_score
+    ai_choice = random.choice(choices)
+
+    if player_choice == ai_choice:
+        result = "It's a Tie 🤝"
+        color = "#FFD54F"
+    elif (player_choice == "Rock" and ai_choice == "Scissors") or \
+         (player_choice == "Paper" and ai_choice == "Rock") or \
+         (player_choice == "Scissors" and ai_choice == "Paper"):
+        result = "You Win 🎉"
+        color = "#4CAF50"
+        player_score += 1
+    else:
+        result = "AI Wins 💻"
+        color = "#F44336"
+        ai_score += 1
+
+    result_label.config(
+        text=f"🧍 You: {emojis[player_choice]}  vs  🤖 AI: {emojis[ai_choice]}\n\n{result}",
+        fg=color
+    )
+    score_label.config(text=f"🏆 You: {player_score}  |  AI: {ai_score}")
+
+def reset_game():
+    global player_score, ai_score
+    player_score = ai_score = 0
+    score_label.config(text="🏆 You: 0  |  AI: 0")
+    result_label.config(text="Make your move!", fg="white")
+
+def toggle_fullscreen():
+    global fullscreen
+    fullscreen = not fullscreen
+    root.attributes("-fullscreen", fullscreen)
+    if fullscreen:
+        fullscreen_btn.config(text="⛶ Exit Fullscreen")
+    else:
+        fullscreen_btn.config(text="⛶ Fullscreen")
+
+def exit_game():
+    root.destroy()
+
+# --- GUI Setup ---
+root = tk.Tk()
+root.title("🎮 Rock Paper Scissors - AI Battle")
+root.geometry("900x600")
+root.configure(bg="#0F2027")  # Deep gradient-like background
+
+# --- Title Section ---
+title_label = tk.Label(root, text="⚡ ROCK PAPER SCISSORS ⚡",
+                       font=("Comic Sans MS", 28, "bold"),
+                       fg="#00E5FF", bg="#0F2027")
+title_label.pack(pady=20)
+
+subtitle_label = tk.Label(root, text="AI vs You — Let’s Play!",
+                          font=("Poppins", 16, "italic"),
+                          fg="#80DEEA", bg="#0F2027")
+subtitle_label.pack(pady=5)
+
+# --- Score Section ---
+score_label = tk.Label(root, text="🏆 You: 0  |  AI: 0",
+                       font=("Consolas", 20, "bold"),
+                       bg="#1C1C1C", fg="#00E676",
+                       relief="ridge", bd=5, padx=20, pady=10)
+score_label.pack(pady=25)
+
+# --- Result Display ---
+result_label = tk.Label(root, text="Make your move!",
+                        font=("Consolas", 18, "bold"),
+                        fg="white", bg="#0F2027")
+result_label.pack(pady=20)
+
+# --- Buttons Frame ---
+button_frame = tk.Frame(root, bg="#0F2027")
+button_frame.pack(pady=40)
+
+def create_button(text, color, command):
+    return tk.Button(button_frame, text=text, font=("Comic Sans MS", 18, "bold"),
+                     width=12, height=2, bg=color, fg="white",
+                     activebackground="#263238", activeforeground="white",
+                     relief="raised", bd=5, cursor="hand2", command=command)
+
+rock_btn = create_button("🪨 Rock", "#E91E63", lambda: play("Rock"))
+paper_btn = create_button("📄 Paper", "#00BCD4", lambda: play("Paper"))
+scissors_btn = create_button("✂️ Scissors", "#4CAF50", lambda: play("Scissors"))
+
+rock_btn.grid(row=0, column=0, padx=30)
+paper_btn.grid(row=0, column=1, padx=30)
+scissors_btn.grid(row=0, column=2, padx=30)
+
+# --- Control Buttons ---
+control_frame = tk.Frame(root, bg="#0F2027")
+control_frame.pack(pady=20)
+
+reset_btn = tk.Button(control_frame, text="🔄 Restart", font=("Poppins", 14, "bold"),
+                      bg="#FFC107", fg="black", width=15, command=reset_game, cursor="hand2")
+reset_btn.grid(row=0, column=0, padx=15)
+
+fullscreen_btn = tk.Button(control_frame, text="⛶ Fullscreen", font=("Poppins", 14, "bold"),
+                           bg="#2196F3", fg="white", width=15, command=toggle_fullscreen, cursor="hand2")
+fullscreen_btn.grid(row=0, column=1, padx=15)
+
+exit_btn = tk.Button(control_frame, text="❌ Exit", font=("Poppins", 14, "bold"),
+                     bg="#F44336", fg="white", width=15, command=exit_game, cursor="hand2")
+exit_btn.grid(row=0, column=2, padx=15)
+
+# --- Footer ---
+footer = tk.Label(root, text="© 2025 Rock Paper Scissors AI | Designed by You 💫",
+                  bg="#0F2027", fg="#B2EBF2", font=("Arial", 10, "italic"))
+footer.pack(side="bottom", pady=10)
+
+# --- Keyboard Shortcut to Exit Fullscreen ---
+root.bind("<Escape>", lambda event: [root.attributes("-fullscreen", False),
+                                     fullscreen_btn.config(text="⛶ Fullscreen")])
+
+root.mainloop()
